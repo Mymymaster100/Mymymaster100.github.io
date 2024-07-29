@@ -1,14 +1,14 @@
-var click = 0; 
+var clicks = 0; 
 var cpc = 1;
 var c = document.getElementById("click");
 var p = document.getElementById("cpc");
 function click() {
-    click += cpc;
-    c.innerHTML = click;
+    clicks += cpc;
+    c.innerHTML = clicks;
 }
 function buy() {
-    if (click >= 10) {
-        click -= 10;
+    if (clicks > 9) {
+        clicks -= 10;
         cpc += 1;
     }
     p.innerHTML = cpc;
