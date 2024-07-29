@@ -7,9 +7,9 @@ function click() {
     c.innerHTML = click;
 }
 function buy() {
-    if click >= 10 {
+    if (click >= 10) {
         click -= 10;
         cpc += 1;
-    };
+    }
     p.innerHTML = cpc;
 }
