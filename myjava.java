@@ -3,7 +3,7 @@ var cpc = 1;
 var c = document.getElementById("click");
 var p = document.getElementById("cpc");
 function click() {
-    clicks += cpc;
+    clicks += 1;
     c.innerHTML = clicks;
 }
 function buy() {
