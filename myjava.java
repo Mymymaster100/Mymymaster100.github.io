@@ -5,4 +5,4 @@ function click() {
     clicks += 1;
     c.innerHTML =  "You Have " + clicks + " Clicks";
     c2.innerHTML = clicks + " - Miles Clicker";
-}
+};
