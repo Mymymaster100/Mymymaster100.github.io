@@ -4,7 +4,6 @@ var c = document.getElementById("clicking");
 var c2 = document.getElementById("clicking2");
 var c3 = document.getElementById("clicking3");
 const button = document.querySelector("button");
-const buybutton = document.querySelector("buybutton");
 function click() {
     clicks += cpc;
     c.textContent =  "You Have " + clicks + " Clicks.";
@@ -16,6 +15,6 @@ function buy() {
         cpc += 1;
     }
     c3.textContent = "You Have " + cpc + " CPC.";
+    c.textContent = "You Have " + clicks + " Clicks.";
 }
 button.addEventListener("click", click);
-buybutton.addEventListener("buy", buy);
