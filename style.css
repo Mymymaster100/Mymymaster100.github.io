@@ -36,7 +36,14 @@ a:visited {
 }
 .c6 {
     max-width: 7em;
-    max-height: 5em;
+    max-height: 20em;
+}
+.c7 {
+    color: red;
+    border: 5px solid cadetblue;
+    background-color: green;
+    max-width: 80px;
+    max-height: 50px;
 }
 
 
