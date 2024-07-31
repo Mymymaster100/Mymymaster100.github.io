@@ -30,5 +30,13 @@ a:visited {
     transform: capitalize;
     font-weight: bold;
 }
+.class5 {
+    max-width: 10em;
+    max-height: 5em;
+}
+.c6 {
+    max-width: 7em;
+    max-height: 5em;
+}
 
 
