@@ -18,4 +18,13 @@ function buy() {
     c.textContent =  "You Have " + clicks + " Clicks.";
     c2.textContent = clicks + " - Miles Clicker";
 }
+function buy10() {
+    if (clicks > 99) {
+        clicks -= 100;
+        cpc += 10;
+    }
+    c3.textContent = "You Have " + cpc + " CPC.";
+    c.textContent =  "You Have " + clicks + " Clicks.";
+    c2.textContent = clicks + " - Miles Clicker";
+}
 button.addEventListener("click", click);
