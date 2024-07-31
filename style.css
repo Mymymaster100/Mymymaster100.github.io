@@ -4,22 +4,13 @@ h1 {
 body {
     background-color: black;
 }
-p {
-    color: white;
-}
-ul {
-    color: white;
-}
-ol {
-    color: white;
-}
-table {
+p, ul, ol, table {
     color: white;
 }
 a:link {
     color: black;
+    text-align: center;
 }
-
 a:visited {
     color: aquamarine;
 }
@@ -28,5 +19,6 @@ a:visited {
 }
 .Class2 {
     font-size: 5em;
-    
+    text-shadow: 4px 4px 5px cadetblue;
 }
+
