@@ -21,4 +21,14 @@ a:visited {
     font-size: 5em;
     text-shadow: 4px 4px 5px cadetblue;
 }
+.Class3 {
+    text-shadow: 5px 5px 5px cadetblue;
+}
+.class4 {
+    text-shadow: 1px 1px 1px red;
+    letter-spacing: 50px;
+    transform: capitalize;
+    font-weight: bold;
+}
+
 
