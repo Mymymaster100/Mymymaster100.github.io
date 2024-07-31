@@ -16,3 +16,10 @@ ol {
 table {
     color: white;
 }
+a:link {
+    color: black;
+}
+
+a:visited {
+    color: aquamarine;
+}
