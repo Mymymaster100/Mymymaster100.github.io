@@ -1,17 +1,36 @@
 var clicks = 0;
 var cpc = 1;
 var savetext = "";
+var clickers = 0;
 var c = document.getElementById("clicking");
 var c2 = document.getElementById("clicking2");
 var c3 = document.getElementById("clicking3");
 var c4 = document.getElementById("save");
 var c5 = document.getElementById("error");
-
+var c6 = document.getElementById("clicking4");
 const button = document.querySelector("button");
 function click() {
     clicks += cpc;
     c.textContent =  "You Have " + clicks + " Clicks.";
     c2.textContent = clicks + " - Miles Clicker";
+}
+function start() {
+    setTimeout(add1, 1000);
+}
+function add1() {
+    clicks += clickers;
+    c.textContent =  "You Have " + clicks + " Clicks.";
+    c2.textContent = clicks + " - Miles Clicker";
+    start();
+}
+function buyClicker() {
+    if (clicks > 49) {
+        clicks -= 50;
+        clickers += 1;
+        c.textContent =  "You Have " + clicks + " Clicks.";
+        c2.textContent = clicks + " - Miles Clicker";
+        c6.textContent = clickers;
+    }
 }
 function buy() {
     if (clicks > 9) {
@@ -106,14 +125,12 @@ function load() {
                     c2.textContent = clicks + " - Miles Clicker";
                     c5.textContent = "Hey! That Is Wrong!";
                 }
-                
             }
-        } else {
-
-        }
+        } else {}
     } else {
         error2 = true;
         c5.textContent = "Hey! That Is Wrong!";
     }
 }
 button.addEventListener("click", click);
+start();
