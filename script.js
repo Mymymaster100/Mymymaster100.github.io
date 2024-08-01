@@ -1,10 +1,11 @@
 var clicks = 0;
 var cpc = 1;
-var savetext = ""
+var savetext = "";
 var c = document.getElementById("clicking");
 var c2 = document.getElementById("clicking2");
 var c3 = document.getElementById("clicking3");
 var c4 = document.getElementById("save");
+var c5 = document.getElementById("error");
 
 const button = document.querySelector("button");
 function click() {
@@ -41,11 +42,11 @@ function buy100() {
 }
 function save() {
     let add = clicks + cpc;
-    savetext = "CLI=" + clicks + ";CLIS=" + add;
+    savetext = "CLI=" + clicks + ";CLIS=" + add + ";";
     c4.textContent = savetext;
 }
 function load() {
-    let text = document.getElementById("input");
+    let text = document.getElementById("input").value;
     var num1 = 0;
     var num2 = 0;
     var error2 = false;
@@ -67,7 +68,7 @@ function load() {
             }
         }
         if (error2) {
-
+            c5.textContent = "Hey! That Is Wrong!";
         } else if (text[on2 + 1] == "C" && text[on2 + 2] == "L" && text[on2 + 3] == "I" && text[on2 + 4] == "S" && text[on2 + 5] == "=") {
             on2 += 5;
             on = true;
@@ -86,22 +87,33 @@ function load() {
                 }
             }
             if (error2) {
-
+                c5.textContent = "Hey! That Is Wrong!";
             } else {
-                num1 = parseInt(num3);
-                num2 = parseInt(num4) - parseInt(num3);
-                clicks = num1;
-                cpc = num2;
-                c3.textContent = "You Have " + cpc + " CPC.";
-                c.textContent =  "You Have " + clicks + " Clicks.";
-                c2.textContent = clicks + " - Miles Clicker";
+                if (parseInt(num3) != NaN && parseInt(num4) != NaN) {
+                    num1 = parseInt(num3);
+                    num2 = parseInt(num4) - parseInt(num3);
+                    clicks = num1;
+                    cpc = num2;
+                    c3.textContent = "You Have " + cpc + " CPC.";
+                    c.textContent =  "You Have " + clicks + " Clicks.";
+                    c2.textContent = clicks + " - Miles Clicker";
+                    c5.textContent = "";
+                } else {
+                    clicks = 0;
+                    cpc = 1;
+                    c3.textContent = "You Have " + cpc + " CPC.";
+                    c.textContent =  "You Have " + clicks + " Clicks.";
+                    c2.textContent = clicks + " - Miles Clicker";
+                    c5.textContent = "Hey! That Is Wrong!";
+                }
+                
             }
         } else {
 
         }
     } else {
         error2 = true;
-
+        c5.textContent = "Hey! That Is Wrong!";
     }
 }
 button.addEventListener("click", click);
