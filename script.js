@@ -62,13 +62,33 @@ function buy100() {
 function save() {
     let add = clicks + cpc;
     savetext = "CLI=" + clicks + ";CLIS=" + add + ";";
+    savetext = savetext.hashCode();
     c4.textContent = savetext;
 }
+String.prototype.hashCode = function() {
+    var hash = 0,
+      i, chr;
+    if (this.length === 0) return hash;
+    for (i = 0; i < this.length; i++) {
+      chr = this.charCodeAt(i);
+      hash = ((hash << 5) - hash) + chr;
+      hash |= 0;
+    }
+    return hash;
+  }
 function load() {
     let text = document.getElementById("input").value;
+    let text2 = document.getElementById("input2").value;
+    let text3 = document.getElementById("input3").value;
+    if (parseInt(text2) != NaN && parseInt(text3) != NaN) {
+        let add = parseInt(text2) + parseInt(text3);
+        t = "CLI=" + parseInt(text2) + ";CLIS=" + add + ";";
+        if (t.hashCode() == text) {
+            text = t;
     var num1 = 0;
     var num2 = 0;
     var error2 = false;
+
     if (text[0] == "C" && text[1] == "L" && text[2] == "I" && text[3] == "=") {
         var on = true;
         var on2 = 3;
@@ -131,6 +151,11 @@ function load() {
         error2 = true;
         c5.textContent = "Hey! That Is Wrong!";
     }
+        }
+    } else {
+        c5.textContent = "Hey! That Is Wrong!";
+    }
+    
 }
 button.addEventListener("click", click);
 start();
