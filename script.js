@@ -12,7 +12,7 @@ const button = document.querySelector("button");
 function click() {
     clicks += cpc;
     c.textContent =  "You Have " + clicks + " Clicks.";
-    c2.textContent = clicks + " - Miles Clicker";
+    c2.textContent = clicks + " - Clicker";
 }
 function start() {
     setTimeout(add1, 1000);
@@ -20,7 +20,7 @@ function start() {
 function add1() {
     clicks += clickers;
     c.textContent =  "You Have " + clicks + " Clicks.";
-    c2.textContent = clicks + " - Miles Clicker";
+    c2.textContent = clicks + " - Clicker";
     start();
 }
 function buyClicker() {
@@ -28,7 +28,7 @@ function buyClicker() {
         clicks -= 50;
         clickers += 1;
         c.textContent =  "You Have " + clicks + " Clicks.";
-        c2.textContent = clicks + " - Miles Clicker";
+        c2.textContent = clicks + " - Clicker";
         c6.textContent = clickers;
     }
 }
@@ -39,7 +39,7 @@ function buy() {
     }
     c3.textContent = "You Have " + cpc + " CPC.";
     c.textContent =  "You Have " + clicks + " Clicks.";
-    c2.textContent = clicks + " - Miles Clicker";
+    c2.textContent = clicks + " - Clicker";
 }
 function buy10() {
     if (clicks > 99) {
@@ -48,7 +48,7 @@ function buy10() {
     }
     c3.textContent = "You Have " + cpc + " CPC.";
     c.textContent =  "You Have " + clicks + " Clicks.";
-    c2.textContent = clicks + " - Miles Clicker";
+    c2.textContent = clicks + " - Clicker";
 }
 function buy100() {
     if (clicks > 999) {
@@ -57,7 +57,7 @@ function buy100() {
     }
     c3.textContent = "You Have " + cpc + " CPC.";
     c.textContent =  "You Have " + clicks + " Clicks.";
-    c2.textContent = clicks + " - Miles Clicker";
+    c2.textContent = clicks + " - Clicker";
 }
 function save() {
     let add = clicks + cpc;
@@ -135,14 +135,14 @@ function load() {
                     cpc = num2;
                     c3.textContent = "You Have " + cpc + " CPC.";
                     c.textContent =  "You Have " + clicks + " Clicks.";
-                    c2.textContent = clicks + " - Miles Clicker";
+                    c2.textContent = clicks + " - Clicker";
                     c5.textContent = "";
                 } else {
                     clicks = 0;
                     cpc = 1;
                     c3.textContent = "You Have " + cpc + " CPC.";
                     c.textContent =  "You Have " + clicks + " Clicks.";
-                    c2.textContent = clicks + " - Miles Clicker";
+                    c2.textContent = clicks + " - Clicker";
                     c5.textContent = "Hey! That Is Wrong!";
                 }
             }
