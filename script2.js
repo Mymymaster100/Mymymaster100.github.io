@@ -1,4 +1,5 @@
 var h = document.getElementById("hash");
+
 String.prototype.hashCode = function() {
     var hash = 0,
       i, chr;
@@ -13,4 +14,7 @@ String.prototype.hashCode = function() {
 function MakeTheHash() {
     var hash = document.getElementById("hashing").value;
     h.textContent = hash.hashCode();
+}
+function TextScrape() {
+  
 }

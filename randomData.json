@@ -1,0 +1,15 @@
+{
+    "Data": [
+        {
+            "x:1,y:1": "https://pokeapi.co/api/v2/pokemon-species/aegislash",
+            "x:2,y:1": "https://pokeapi.co/api/v2/version-group/25/",
+            "x:1,y:2": "https://pokeapi.co/api/v2/move-learn-method/1/",
+            "x:2,y:2": "https://pokeapi.co/api/v2/version/22/"
+        },
+        {
+            "ditto": "https://pokeapi.co/api/v2/pokemon-species/ditto",
+            "aegislash": "https://pokeapi.co/api/v2/pokemon-species/aegislash",
+            "pikachu": "https://pokeapi.co/api/v2/pokemon-species/pikachu"
+        }
+    ]
+}
