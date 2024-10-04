@@ -24,4 +24,5 @@ function fiveStar() {
 
 function loadThings() {
   let a = "review: " + text1.get() + " rating: " + star;
+  text2.textContent = a;
 }
