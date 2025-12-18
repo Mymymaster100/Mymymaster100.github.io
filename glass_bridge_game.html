@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Glass Bridge</title>
+    </head>
+
+    <body>
+        <canvas id="gameCanvas" width="800" height="1600" style="border:1px solid #000000;"></canvas>
+        <button onclick="movePlayer('left')" style="position: absolute; left: 1200px; top: 100px;">Left</button>
+        <button onclick="movePlayer('right')" style="position: absolute; left: 1300px; top: 100px;">Right</button>
+        <button onclick="clearData()" style="position: absolute; left: 1400px; top: 100px;">Clear Data</button>
+        <p id="winsCount"style="position: absolute; left: 1200px; top: 200px;">Wins: 0</p>
+    </body>
+    <script>
+        
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#2B4676";
+        ctx.fillRect(0, 0, 800, 1200);
+        ctx.fillStyle = "#008000";
+        ctx.fillRect(0, 1200, 800, 400);
+        ctx.fillStyle = "#ADD8E6";
+        ctx.fillRect(100, 1000, 75, 75);
+        ctx.fillRect(625, 1000, 75, 75);
+        ctx.fillRect(100, 800, 75, 75);
+        ctx.fillRect(625, 800, 75, 75);
+        ctx.fillRect(100, 600, 75, 75);
+        ctx.fillRect(625, 600, 75, 75);
+        ctx.fillRect(100, 400, 75, 75);
+        ctx.fillRect(625, 400, 75, 75);
+        ctx.fillStyle = "#008000";
+        ctx.fillRect(0, 0, 800, 300);
+        var playerX = 350;
+        var playerY = 1225;
+        var wins = 0;
+        if (localStorage.getItem('wins') !== null) {
+            wins = parseInt(localStorage.getItem('wins'));
+            document.getElementById('winsCount').innerText = 'Wins: ' + wins;
+        } else {
+            wins = 0;
+        }
+        function clearData() {
+            if (confirm("Are you sure You want to clear all data? This action cannot be undone.")) {
+                localStorage.clear();
+                wins = 0;
+            }
+        }
+        function drawPlayer() {
+            ctx.fillStyle = "#FF0000";
+            ctx.fillRect(playerX, playerY, 50, 50);
+        }
+        var bridge = [];
+        if (Math.random() < 0.5) {
+            bridge.push(true);
+        } else {
+            bridge.push(false);
+        }
+        if (Math.random() < 0.5) {
+            bridge.push(true);
+        } else {
+            bridge.push(false);
+        }
+        if (Math.random() < 0.5) {
+            bridge.push(true);
+        } else {
+            bridge.push(false);
+        }
+        if (Math.random() < 0.5) {
+            bridge.push(true);
+        } else {
+            bridge.push(false);
+        }
+        console.log(bridge);
+        var bridgeIndex = 0;
+        function movePlayer(direction) {
+            if (direction === "left") {
+                playerX = 125;
+                playerY -= 200;
+                if (bridgeIndex === bridge.length) {
+                    alert("You crossed the bridge safely!");
+                    wins += 1;
+                    document.getElementById('winsCount').innerText = 'Wins: ' + wins;
+                    localStorage.setItem('wins', wins);
+                    return;
+                }
+                if (bridge[bridgeIndex] === true) {
+                    alert("You fell through the glass! Game Over.");
+                    playerX = 350;
+                    playerY = 1225;
+                    bridgeIndex = 0;
+                    redraw();
+                    return;
+                }
+                bridgeIndex++;
+
+
+            } else if (direction === "right") {
+                playerX = 625;
+                playerY -= 200;
+                if (bridgeIndex === bridge.length) {
+                    alert("You crossed the bridge safely!");
+                    wins += 1;
+                    document.getElementById('winsCount').innerText = 'Wins: ' + wins;
+                    localStorage.setItem('wins', wins);
+                    return;
+                }
+                if (bridge[bridgeIndex] === false) {
+                    alert("You fell through the glass! Game Over.");
+                    playerX = 350;
+                    playerY = 1225;
+                    bridgeIndex = 0;
+                    redraw();
+                    return;
+                }
+                bridgeIndex++;
+
+
+            } 
+            redraw();
+        }
+        function redraw() {
+            ctx.fillStyle = "#2B4676";
+            ctx.fillRect(0, 0, 800, 1200);
+            ctx.fillStyle = "#008000";
+            ctx.fillRect(0, 1200, 800, 400);
+            ctx.fillStyle = "#ADD8E6";
+            ctx.fillRect(100, 1000, 75, 75);
+            ctx.fillRect(625, 1000, 75, 75);
+            ctx.fillRect(100, 800, 75, 75);
+            ctx.fillRect(625, 800, 75, 75);
+            ctx.fillRect(100, 600, 75, 75);
+            ctx.fillRect(625, 600, 75, 75);
+            ctx.fillRect(100, 400, 75, 75);
+            ctx.fillRect(625, 400, 75, 75);
+            ctx.fillStyle = "#008000";
+            ctx.fillRect(0, 0, 800, 300);
+            drawPlayer();
+        }
+        drawPlayer();
+    </script>
+</html>
