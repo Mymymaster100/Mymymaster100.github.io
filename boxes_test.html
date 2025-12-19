@@ -29,35 +29,50 @@
     ctx.fillStyle = "#000000";
     ctx.fillRect(1000, 1000, 200, 200);
     function redraw() {
-        box1.x = boxX;
-        box1.y = boxY;
         ctx.fillStyle = "#333333";
         ctx.fillRect(0, 0, 2560, 1600);
         ctx.fillStyle = "#FF474C";
         ctx.fillRect(playerX, playerY, 100, 100)
         ctx.fillStyle = "#000000";
         collisionBoxes.forEach(function(box) {
-            ctx.fillRect(box.x, box.y, box.width, box.height);
+            if (!(box.type === "ToggleBox")) {
+                ctx.fillRect(box.x, box.y, box.width, box.height);
+            }
         });
         ctx.fillStyle = "#964B00";
-        ctx.fillRect(boxX, boxY, 100, 100);
+        if (Pushboxes.length > 0) {
+            Pushboxes.forEach(function(box) {
+                ctx.fillRect(box.x, box.y, box.width, box.height);
+            });
+        }
         ctx.fillStyle = "#FFFF00";
-        ctx.fillRect(functionBoxTest.x, functionBoxTest.y, functionBoxTest.width, functionBoxTest.height);    
+        if (functionBoxes.length > 0) {
+            functionBoxes.forEach(function(box) {
+                ctx.fillRect(box.x, box.y, box.width, box.height);
+            });
+        }  
+        ctx.fillStyle = "#00FFFF";
+        if (ToggleBoxes.length > 0) {
+            ToggleBoxes.forEach(function(box) {
+                if (box.on) {
+                    ctx.fillRect(box.x, box.y, box.width, box.height);
+                }
+            });
+        }
         
     };
     var aDown = false;
     var dDown = false;
     var wDown = false;
     var sDown = false;
-    var boxX = 5000;
-    var boxY = 5000;
-    var level = 0;
+    var level = 1;
     class CollisionBox {
         constructor(x, y, width, height) {
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
+            this.type = "CollisionBox";
         }
     }
     class PushBox {
@@ -66,6 +81,11 @@
             this.y = y;
             this.width = width;
             this.height = height;
+            this.locked = false;
+            this.type = "PushBox";
+            this.preX = x;
+            this.preY = y;
+            this.locked = false;
         }
     }
     class functionBox {
@@ -75,17 +95,60 @@
             this.width = width;
             this.height = height;
             this.func = func;
+            this.type = "functionBox";
+        }
+    }
+    class ToggleBox {
+        constructor(x, y, width, height, on) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.on = on;
+            this.type = "ToggleBox";
+            this.timer = 0.00;
+            this.preValue = on;
+        }
+    }
+    class BoxHolder {
+        constructor(x, y, func) {
+            this.x = x;
+            this.y = y;
+            this.func = func;
+            this.type = "BoxHolder";
         }
     }
     function isColliding()  {
         var things = [];
         var amount = 0;
         collisionBoxes.forEach(function(box) {
-            amount += 1;
-            things.push(((playerX > box.x - 100) &&
+            if (box.type == "ToggleBox") {
+                if (box.on) {
+                    amount += 1;
+                    things.push(((playerX > box.x - 100) &&
                         (playerX < box.x + box.width) &&
                         (playerY > box.y - 100) &&
                         (playerY < box.y + box.height)));
+                } else {
+                    
+                }
+            } else {
+                amount += 1;
+                things.push(((playerX > box.x - 100) &&
+                        (playerX < box.x + box.width) &&
+                        (playerY > box.y - 100) &&
+                        (playerY < box.y + box.height)));
+            }
+        ToggleBoxes.forEach(function(box) {
+            if (box.on) {
+                amount += 1;
+                things.push(((playerX > box.x - 100) &&
+                        (playerX < box.x + box.width) &&
+                        (playerY > box.y - 100) &&
+                        (playerY < box.y + box.height)));
+            }
+        });
+            
             
         });
         if (things.includes(true)) {
@@ -98,44 +161,145 @@
     var wallRight = new CollisionBox(2460, 0, 100, 1600);
     var wallTop = new CollisionBox(0, 0, 2560, 100);
     var wallBottom = new CollisionBox(0, 1500, 2560, 100);
-    var MazeWall1 = new CollisionBox(200, 200, 100, 2000);
-    var MazeWall2 = new CollisionBox(400, 100, 100, 1300);
-    var MazeWall3 = new CollisionBox(500, 1300, 1860, 100);
-    var MazeWall4 = new CollisionBox(600, 1100, 1860, 100);
-    var MazeWall5 = new CollisionBox(600, 100, 100, 900);
-    var MazeWall6 = new CollisionBox(700, 900, 1660, 100);
-    var MazeWall7 = new CollisionBox(700, 700, 1660, 100);
-    var MazeWall8 = new CollisionBox(2260, 200, 100, 600);
-    var MazeWall9 = new CollisionBox(800, 200, 1460, 100);
-    var MazeWall10 = new CollisionBox(800, 400, 1360, 200);
-    var MazeWall11 = new CollisionBox(800, 300, 100, 100);
-    var functionBoxTest = new functionBox(900, 300, 100, 100, function() {
+    var Level2CollisionBox1 = new CollisionBox(200, 200, 100, 2000);
+    var Level2CollisionBox2 = new CollisionBox(400, 100, 100, 1300);
+    var Level2CollisionBox3 = new CollisionBox(500, 1300, 1860, 100);
+    var Level2CollisionBox4 = new CollisionBox(600, 1100, 1860, 100);
+    var Level2CollisionBox5 = new CollisionBox(600, 100, 100, 900);
+    var Level2CollisionBox6 = new CollisionBox(700, 900, 1660, 100);
+    var Level2CollisionBox7 = new CollisionBox(700, 700, 1660, 100);
+    var Level2CollisionBox8 = new CollisionBox(2260, 200, 100, 600);
+    var Level2CollisionBox9 = new CollisionBox(800, 200, 1460, 100);
+    var Level2CollisionBox10 = new CollisionBox(800, 400, 1360, 200);
+    var Level2CollisionBox11 = new CollisionBox(800, 300, 100, 100);
+    var Level3CollisionBox1 = new CollisionBox(200, 1300, 2160, 100);
+    var Level3CollisionBox2 = new CollisionBox(2260, 100, 100, 1200);
+    var Level3ToggleBox = new ToggleBox(100, 1300, 100, 100, true);
+
+    
+
+    var Level1FunctionBox = new functionBox(900, 300, 100, 100, function() {
         redraw();
 
-        if (level == 1) {
-            alert("You win!");
-            aDown = false;
-            dDown = false;
-            wDown = false;
-            sDown = false;
+        playerX = 100;
+        playerY = 1400;
+        aDown = false;
+        dDown = false;
+        wDown = false;
+        sDown = false;
+        collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom, Level2CollisionBox1, Level2CollisionBox2, Level2CollisionBox3, Level2CollisionBox4, Level2CollisionBox5, Level2CollisionBox6, Level2CollisionBox7, Level2CollisionBox8, Level2CollisionBox9, Level2CollisionBox10, Level2CollisionBox11]
+        functionBoxes = [Level2FunctionBox];
+        ToggleBoxes = [];
+        pushboxes = [];
+        alert("Next Level!");
+        level += 1;
+        redraw();
+    });
+    var Level2FunctionBox = new functionBox(900, 300, 100, 100, function() {
+        redraw();
+        playerX = 100;
+        playerY = 1400;
+        aDown = false;
+        dDown = false;
+        wDown = false;
+        sDown = false;
+        collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom, Level3CollisionBox1, Level3CollisionBox2];
+        functionBoxes = [Level3FunctionBox1, level3FunctionBox2];
+        ToggleBoxes = [Level3ToggleBox];
+        Pushboxes = [];
+        alert("Next Level!");
+        level += 1;
+        redraw();
+    });
+    var Level3FunctionBox1 = new functionBox(2360, 100, 100, 100, function() {
+        if (Level3ToggleBox.timer === 0.00) {
+            Level3ToggleBox.on = !Level3ToggleBox.on;
+            Level3ToggleBox.timer = 0.50;
+        }
+        redraw();
+    });
+    var level3FunctionBox2 = new functionBox(900, 300, 100, 100, function() {
+        redraw();
+        alert("You Win!");
+        collisionBoxes = [];
+        functionBoxes = []
+        ToggleBoxes = [];
+        Pushboxes = [box1];
+        level = -1
+        redraw();
 
-        } else {
+    });
+    var box1 = new PushBox(500, 500, 100, 100);
+    var collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom];
+    var ToggleBoxes = [];
+    var functionBoxes = [Level1FunctionBox];
+    var Pushboxes = [];
+
+    function restartLevel() {
+        if (level === 1) {
             playerX = 100;
             playerY = 1400;
-            boxX = 5000;
-            boxY = 5000;
             aDown = false;
             dDown = false;
             wDown = false;
             sDown = false;
-            collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom, MazeWall1, MazeWall2, MazeWall3, MazeWall4, MazeWall5, MazeWall6, MazeWall7, MazeWall8, MazeWall9, MazeWall10, MazeWall11]
-            alert("Next Level!");
-            level += 1;
-            redraw();
+            collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom];
+            ToggleBoxes = [];
+            functionBoxes = [Level1FunctionBox];
+            Pushboxes = [];
+            ToggleBoxes.forEach(function(box) {
+                box.on = box.preValue;
+                box.timer = 0.00;
+            });
+            Pushboxes.forEach(function(box) {
+                box.x = box.preX;
+                box.y = box.preY;
+            });
         }
-    });
-    var box1 = new PushBox(boxX, boxY, 100, 100);
-    collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom];
+        if (level === 2) {
+            playerX = 100;
+            playerY = 1400;
+            aDown = false;
+            dDown = false;
+            wDown = false;
+            sDown = false;
+            collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom, Level2CollisionBox1, Level2CollisionBox2, Level2CollisionBox3, Level2CollisionBox4, Level2CollisionBox5, Level2CollisionBox6, Level2CollisionBox7, Level2CollisionBox8, Level2CollisionBox9, Level2CollisionBox10, Level2CollisionBox11];
+            functionBoxes = [Level2FunctionBox];
+            ToggleBoxes = [];
+            pushboxes = [];
+            ToggleBoxes.forEach(function(box) {
+                box.on = box.preValue;
+                box.timer = 0.00;
+            });
+            Pushboxes.forEach(function(box) {
+                box.x = box.preX;
+                box.y = box.preY;
+            });
+        }
+        if (level === 3) {
+            playerX = 100;
+            playerY = 1400;
+            aDown = false;
+            dDown = false;
+            wDown = false;
+            sDown = false;
+            collisionBoxes = [wallLeft, wallRight, wallTop, wallBottom, Level3CollisionBox1, Level3CollisionBox2];
+            functionBoxes = [Level3FunctionBox1, level3FunctionBox2];
+            ToggleBoxes = [Level3ToggleBox];
+            Pushboxes = [];
+            ToggleBoxes.forEach(function(box) {
+                box.on = box.preValue;
+                box.timer = 0.00;
+            });
+            Pushboxes.forEach(function(box) {
+                box.x = box.preX;
+                box.y = box.preY;
+            });
+        }
+        redraw();
+    }
+    
+
     document.addEventListener('keyup', function(event) {
         if (event.key === 'a' || event.key === 'A') {
             aDown = false;
@@ -152,6 +316,9 @@
         if (event.key === 's' || event.key === 'S') {
             sDown = false;
             redraw();
+        }
+        if (event.key === 'r' || event.key === 'R') {
+            restartLevel();
         }
     });
     document.addEventListener('keydown', function(event) {
@@ -195,24 +362,32 @@
                 playerX += 10;
 
             }
-            if (playerX > boxX - 100 && playerX < boxX + 100 && playerY > boxY - 100 && playerY < boxY + 100) {
-                var X = boxX;
-                boxX -= 10;
-                while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                    boxX += 10;
-                }
-                if (X == boxX) {
-                    playerX += 10;
-                }
+            Pushboxes.forEach(function(box) {
+                if (playerX > box.x - 100 && playerX < box.x + 100 && playerY > box.y - 100 && playerY < box.y + 100) {
+                    var X = box.x;
+                    box.x -= 10;
+                    collisionBoxes.forEach(function(cbox) {
+                        if (box.type !== "ToggleBox") {
+                            while (box.x > cbox.x - box.width && box.x < cbox.x + cbox.width && box.y > cbox.y - 100 && box.y < cbox.y + cbox.height) {
+                                box.x += 10;
+                            }
+                        }
+                    })
+                    if (X == box.x) {
+                        playerX += 10;
+                    }
 
-            }
-            while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                boxX += 10;
-            }
-            if (playerX === functionBoxTest.x && playerY === functionBoxTest.y) {
-                redraw();
-                functionBoxTest.func();
-            }
+                }
+            
+
+            });
+            
+            functionBoxes.forEach(function(box) {
+                if (playerX === box.x && playerY === box.y) {
+                    redraw();
+                    box.func();
+                }
+            });
             
             
         }
@@ -221,73 +396,107 @@
             while ((isColliding())) {
                 playerX -= 10;
             }
-            if (playerX > boxX - 100 && playerX < boxX + 100 && playerY > boxY - 100 && playerY < boxY + 100) {
-                var X = boxX;
-                boxX += 10;
-                while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                    boxX -= 10;
+            Pushboxes.forEach(function(box) {
+                if (playerX > box.x - 100 && playerX < box.x + 100 && playerY > box.y - 100 && playerY < box.y + 100) {
+                    var X = box.x;
+                    box.x += 10;
+                    collisionBoxes.forEach(function(cbox) {
+                        if (box.type !== "ToggleBox") {
+                            while (box.x > cbox.x - box.width && box.x < cbox.x + cbox.width && box.y > cbox.y - 100 && box.y < cbox.y + cbox.height) {
+                                box.x -= 10;
+                            }
+                        }
+                    })
+                    if (X == box.x) {
+                        playerX -= 10;
+                    }
+
                 }
-                if (X == boxX) {
-                    playerX -= 10;
+                
+
+            });
+            functionBoxes.forEach(function(box) {
+                if (playerX === box.x && playerY === box.y) {
+                    redraw();
+                    box.func();
                 }
-            }
-            while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                boxX -= 10;
-            }
-            if (playerX === functionBoxTest.x && playerY === functionBoxTest.y) {
-                redraw();
-                functionBoxTest.func();
-            }
+            });
         }
         if (wDown) {
             playerY -= 10;
             while (isColliding()) {
                 playerY += 10;
             }
-            if (playerX > boxX - 100 && playerX < boxX + 100 && playerY > boxY - 100 && playerY < boxY + 100) {
-                var Y = boxY;
-                boxY -= 10;
-                while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                    boxY += 10;
+            Pushboxes.forEach(function(box) {
+                if (playerX > box.x - 100 && playerX < box.x + 100 && playerY > box.y - 100 && playerY < box.y + 100) {
+                    var Y = box.y;
+                    box.y -= 10;
+                    collisionBoxes.forEach(function(cbox) {
+                        if (box.type !== "ToggleBox") {
+                            while (box.x > cbox.x - box.width && box.x < cbox.x + cbox.width && box.y > cbox.y - 100 && box.y < cbox.y + cbox.height) {
+                                box.y += 10;
+                            }
+                        }
+                    })
+                    if (Y == box.y) {
+                        playerY += 10;
+                    }
+
                 }
-                if (Y == boxY) {
-                    playerY += 10;
+                
+
+            });
+            functionBoxes.forEach(function(box) {
+                if (playerX === box.x && playerY === box.y) {
+                    redraw();
+                    box.func();
                 }
-            }
-            while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                boxY += 10;
-            }
-            if (playerX === functionBoxTest.x && playerY === functionBoxTest.y) {
-                redraw();
-                functionBoxTest.func();
-            }
+            });
         }
         if (sDown) {
             playerY += 10;
             while (isColliding()) {
                 playerY -= 10;
             }
-            if (playerX > boxX - 100 && playerX < boxX + 100 && playerY > boxY - 100 && playerY < boxY + 100) {
-                var Y = boxY;
-                boxY += 10;
-                while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                    boxY -= 10;
+            Pushboxes.forEach(function(box) {
+                if (playerX > box.x - 100 && playerX < box.x + 100 && playerY > box.y - 100 && playerY < box.y + 100) {
+                    var Y = box.y;
+                    box.y += 10;
+                    collisionBoxes.forEach(function(cbox) {
+                        if (box.type !== "ToggleBox") {
+                            while (box.x > cbox.x - box.width && box.x < cbox.x + cbox.width && box.y > cbox.y - 100 && box.y < cbox.y + cbox.height) {
+                                box.y -= 10;
+                            }
+                        }
+                    })
+                    if (Y == box.y) {
+                        playerY -= 10;
+                    }
+
                 }
-                if (Y == boxY) {
-                    playerY -= 10;
+                
+
+            });
+            functionBoxes.forEach(function(box) {
+                if (playerX === box.x && playerY === box.y) {
+                    redraw();
+                    box.func();
                 }
-            }
-            while (boxX > 900 && boxX < 1200 && boxY > 900 && boxY < 1200 || (boxX > 100 && boxX < 300 && boxY > 1300 && boxY < 1500)) {
-                boxY -= 10;
-            }
-            if (playerX === functionBoxTest.x && playerY === functionBoxTest.y) {
-                redraw();
-                functionBoxTest.func();
-            }
+            });
         }
 
         redraw();
     }, 30);
+    setInterval(function() {
+        ToggleBoxes.forEach(function(box) {
+            if (box.timer > 0.00) {
+                box.timer -= 0.01;
+                if (box.timer < 0.00) {
+                    box.timer = 0.00;
+                }
+            }
+        });
+    }, 10);
     redraw();
 
 </script>
