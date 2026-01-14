@@ -1,0 +1,249 @@
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+        var playerX = 50
+        var playerY = 250
+        var gravity = 0.7;
+        var upwardsForce = 0;
+        var dDown = false;
+        var aDown = false;
+        var canJump = true;
+        var mouseX = 0;
+        var mouseY = 0;
+
+        var jumps = 0;
+
+        var maxJumps = 2;       
+        function getTexture(name) {
+            return document.getElementById(name)
+        }
+        var Textures = {"Player Idle 1": getTexture("Player Idle 1"), "Player Idle 2": getTexture("Player Idle 2"), "Player Looking Left": getTexture("Player Looking Left"), "Player Looking Right": getTexture("Player Looking Right")}
+        var Current_Texture = Textures["Player Idle 1"]
+        class Block {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.up = 0
+                this.left = 0
+                this.right = 0
+                this.down = 0
+            }
+
+            draw() {
+                blocks.forEach(function(block) {
+                    //if (block.x === this.x && block.y === this.y - 1) {
+                    //    up = true
+                    //} else if (block.x === this.x - 1 && block.y === this.y) {
+                    //    left = true
+                    //} else if (block.x === this.x + 1 && block.y === this.y) {
+                    //    right = true
+                    //} else if (block.x === this.x && block.y === this.y + 1) {
+                    //    down = true
+                    //}
+                })
+                ctx.fillStyle = "brown";
+                var name = "Grass Up:" + this.up + " Right:" + this.right + " Down:" + this.down +" Left:" + this.left
+                ctx.drawImage(getTexture(name), this.x * 50, this.y * 50);
+            }
+        }
+        var blocks = [new Block(0,0),new Block(0,1),new Block(0,2),new Block(0,3),new Block(0,4),new Block(0,5),new Block(0,6),new Block(0,7),new Block(0,8),new Block(0,9),new Block(0,10),new Block(0,11),new Block(0,12),new Block(0,13),new Block(0,14),new Block(0,15),new Block(0,16),new Block(1,0),new Block(1,16),new Block(2,0),new Block(2,16),new Block(3,0),new Block(3,16),new Block(4,0),new Block(4,15),new Block(4,16),new Block(5,0),new Block(5,16),new Block(6,0),new Block(6,16),new Block(7,0),new Block(7,14),new Block(7,16),new Block(8,0),new Block(8,16),new Block(9,0),new Block(9,16),new Block(10,0),new Block(10,13),new Block(10,16),new Block(11,0),new Block(11,16),new Block(12,0),new Block(12,16),new Block(13,0),new Block(13,12),new Block(13,16),new Block(14,0),new Block(14,16),new Block(15,0),new Block(15,16),new Block(16,0),new Block(16,11),new Block(16,16),new Block(17,0),new Block(17,16),new Block(18,0),new Block(18,16),new Block(19,0),new Block(19,10),new Block(19,16),new Block(20,0),new Block(20,16),new Block(21,0),new Block(21,16),new Block(22,0),new Block(22,9),new Block(22,16),new Block(23,0),new Block(23,16),new Block(24,0),new Block(24,16),new Block(25,0),new Block(25,8),new Block(25,16),new Block(26,0),new Block(26,16),new Block(27,0),new Block(27,16),new Block(28,0),new Block(28,7),new Block(28,16),new Block(29,0),new Block(29,16),new Block(30,0),new Block(30,16),new Block(31,0),new Block(31,6),new Block(31,16),new Block(32,0),new Block(32,16),new Block(33,0),new Block(33,16),new Block(34,0),new Block(34,5),new Block(34,16),new Block(35,0),new Block(35,15),new Block(35,16),new Block(36,0),new Block(36,16),new Block(37,0),new Block(37,4),new Block(37,14),new Block(37,16),new Block(38,0),new Block(38,16),new Block(39,0),new Block(39,13),new Block(39,16),new Block(40,0),new Block(40,3),new Block(40,16),new Block(41,0),new Block(41,12),new Block(41,16),new Block(42,0),new Block(42,4),new Block(42,16),new Block(43,0),new Block(43,11),new Block(43,16),new Block(44,0),new Block(44,5),new Block(44,16),new Block(45,0),new Block(45,10),new Block(45,16),new Block(46,0),new Block(46,6),new Block(46,16),new Block(47,0),new Block(47,9),new Block(47,16),new Block(48,0),new Block(48,7),new Block(48,16),new Block(49,0),new Block(49,1),new Block(49,2),new Block(49,3),new Block(49,4),new Block(49,5),new Block(49,6),new Block(49,7),new Block(49,8),new Block(49,9),new Block(49,10),new Block(49,11),new Block(49,12),new Block(49,13),new Block(49,14),new Block(49,15),new Block(49,16)];
+        //blocks = [new Block(0,0),new Block(0,1),new Block(0,2),new Block(0,3),new Block(0,4),new Block(0,5),new Block(0,6),new Block(0,7),new Block(0,8),new Block(0,9),new Block(0,10),new Block(0,11),new Block(0,12),new Block(0,13),new Block(0,14),new Block(0,15),new Block(0,16),new Block(0,17),new Block(0,18),new Block(0,19),new Block(0,20),new Block(0,21),new Block(0,22),new Block(0,23),new Block(0,24),new Block(0,25),new Block(0,26),new Block(0,27),new Block(0,28),new Block(0,29),new Block(0,30),new Block(0,31),new Block(1,0),new Block(1,4),new Block(1,31),new Block(2,0),new Block(2,2),new Block(2,4),new Block(2,5),new Block(2,6),new Block(2,7),new Block(2,8),new Block(2,9),new Block(2,10),new Block(2,11),new Block(2,12),new Block(2,13),new Block(2,14),new Block(2,15),new Block(2,16),new Block(2,17),new Block(2,18),new Block(2,19),new Block(2,20),new Block(2,21),new Block(2,22),new Block(2,23),new Block(2,24),new Block(2,25),new Block(2,26),new Block(2,27),new Block(2,28),new Block(2,29),new Block(2,31),new Block(3,0),new Block(3,2),new Block(3,6),new Block(3,9),new Block(3,16),new Block(3,23),new Block(3,31),new Block(4,0),new Block(4,2),new Block(4,23),new Block(4,31),new Block(5,0),new Block(5,2),new Block(5,31),new Block(6,0),new Block(6,2),new Block(6,30),new Block(6,31),new Block(7,0),new Block(7,2),new Block(7,31),new Block(8,0),new Block(8,2),new Block(8,12),new Block(8,19),new Block(8,31),new Block(9,0),new Block(9,2),new Block(9,3),new Block(9,4),new Block(9,5),new Block(9,6),new Block(9,7),new Block(9,8),new Block(9,9),new Block(9,10),new Block(9,11),new Block(9,12),new Block(9,13),new Block(9,14),new Block(9,15),new Block(9,16),new Block(9,17),new Block(9,18),new Block(9,19),new Block(9,20),new Block(9,21),new Block(9,22),new Block(9,23),new Block(9,24),new Block(9,25),new Block(9,31),new Block(10,0),new Block(10,2),new Block(10,5),new Block(10,9),new Block(10,13),new Block(10,17),new Block(10,21),new Block(10,25),new Block(10,29),new Block(10,30),new Block(10,31),new Block(11,0),new Block(11,2),new Block(11,31),new Block(12,0),new Block(12,2),new Block(12,31),new Block(13,0),new Block(13,2),new Block(13,7),new Block(13,11),new Block(13,15),new Block(13,19),new Block(13,23),new Block(13,27),new Block(13,31),new Block(14,0),new Block(14,2),new Block(14,5),new Block(14,6),new Block(14,7),new Block(14,8),new Block(14,9),new Block(14,10),new Block(14,11),new Block(14,12),new Block(14,13),new Block(14,14),new Block(14,15),new Block(14,16),new Block(14,17),new Block(14,18),new Block(14,19),new Block(14,20),new Block(14,21),new Block(14,22),new Block(14,23),new Block(14,24),new Block(14,25),new Block(14,26),new Block(14,27),new Block(14,28),new Block(14,29),new Block(14,30),new Block(14,31),new Block(15,0),new Block(15,2),new Block(15,7),new Block(15,11),new Block(15,15),new Block(15,19),new Block(15,23),new Block(15,27),new Block(15,31),new Block(16,0),new Block(16,2),new Block(16,5),new Block(16,9),new Block(16,13),new Block(16,17),new Block(16,21),new Block(16,25),new Block(16,29),new Block(16,31),new Block(17,0),new Block(17,2),new Block(17,3),new Block(17,4),new Block(17,5),new Block(17,6),new Block(17,7),new Block(17,8),new Block(17,9),new Block(17,10),new Block(17,11),new Block(17,12),new Block(17,13),new Block(17,14),new Block(17,15),new Block(17,16),new Block(17,17),new Block(17,18),new Block(17,19),new Block(17,20),new Block(17,21),new Block(17,22),new Block(17,23),new Block(17,24),new Block(17,25),new Block(17,26),new Block(17,27),new Block(17,28),new Block(17,29),new Block(17,31),new Block(18,0),new Block(18,2),new Block(18,31),new Block(19,0),new Block(19,31),new Block(20,0),new Block(20,31),new Block(21,0),new Block(21,31),new Block(22,0),new Block(22,31),new Block(23,0),new Block(23,31),new Block(24,0),new Block(24,31),new Block(25,0),new Block(25,31),new Block(26,0),new Block(26,31),new Block(27,0),new Block(27,31),new Block(28,0),new Block(28,31),new Block(29,0),new Block(29,31),new Block(30,0),new Block(30,31),new Block(31,0),new Block(31,31),new Block(32,0),new Block(32,31),new Block(33,0),new Block(33,31),new Block(34,0),new Block(34,31),new Block(35,0),new Block(35,31),new Block(36,0),new Block(36,31),new Block(37,0),new Block(37,31),new Block(38,0),new Block(38,31),new Block(39,0),new Block(39,31),new Block(40,0),new Block(40,31),new Block(41,0),new Block(41,31),new Block(42,0),new Block(42,31),new Block(43,0),new Block(43,31),new Block(44,0),new Block(44,31),new Block(45,0),new Block(45,31),new Block(46,0),new Block(46,31),new Block(47,0),new Block(47,31),new Block(48,0),new Block(48,31),new Block(49,0),new Block(49,1),new Block(49,2),new Block(49,3),new Block(49,4),new Block(49,5),new Block(49,6),new Block(49,7),new Block(49,8),new Block(49,9),new Block(49,10),new Block(49,11),new Block(49,12),new Block(49,13),new Block(49,14),new Block(49,15),new Block(49,16),new Block(49,17),new Block(49,18),new Block(49,19),new Block(49,20),new Block(49,21),new Block(49,22),new Block(49,23),new Block(49,24),new Block(49,25),new Block(49,26),new Block(49,27),new Block(49,28),new Block(49,29),new Block(49,30),new Block(49,31)]
+        blocks = [new Block(0,0),new Block(0,1),new Block(0,2),new Block(0,3),new Block(0,4),new Block(0,5),new Block(0,6),new Block(0,7),new Block(0,8),new Block(0,9),new Block(0,10),new Block(0,11),new Block(0,12),new Block(0,13),new Block(0,14),new Block(0,15),new Block(0,16),new Block(0,17),new Block(0,18),new Block(0,19),new Block(0,20),new Block(0,21),new Block(0,22),new Block(0,23),new Block(0,24),new Block(0,25),new Block(0,26),new Block(0,27),new Block(0,28),new Block(0,29),new Block(0,30),new Block(0,31),new Block(1,0),new Block(1,4),new Block(1,31),new Block(2,0),new Block(2,2),new Block(2,4),new Block(2,5),new Block(2,6),new Block(2,7),new Block(2,8),new Block(2,9),new Block(2,10),new Block(2,11),new Block(2,12),new Block(2,13),new Block(2,14),new Block(2,15),new Block(2,16),new Block(2,17),new Block(2,18),new Block(2,19),new Block(2,20),new Block(2,21),new Block(2,22),new Block(2,23),new Block(2,24),new Block(2,25),new Block(2,26),new Block(2,27),new Block(2,28),new Block(2,29),new Block(2,31),new Block(3,0),new Block(3,2),new Block(3,6),new Block(3,9),new Block(3,16),new Block(3,23),new Block(3,31),new Block(4,0),new Block(4,2),new Block(4,23),new Block(4,31),new Block(5,0),new Block(5,2),new Block(5,31),new Block(6,0),new Block(6,2),new Block(6,30),new Block(6,31),new Block(7,0),new Block(7,2),new Block(7,31),new Block(8,0),new Block(8,2),new Block(8,12),new Block(8,19),new Block(8,31),new Block(9,0),new Block(9,2),new Block(9,3),new Block(9,4),new Block(9,5),new Block(9,6),new Block(9,7),new Block(9,8),new Block(9,9),new Block(9,10),new Block(9,11),new Block(9,12),new Block(9,13),new Block(9,14),new Block(9,15),new Block(9,16),new Block(9,17),new Block(9,18),new Block(9,19),new Block(9,20),new Block(9,21),new Block(9,22),new Block(9,23),new Block(9,24),new Block(9,25),new Block(9,31),new Block(10,0),new Block(10,2),new Block(10,5),new Block(10,9),new Block(10,13),new Block(10,17),new Block(10,21),new Block(10,25),new Block(10,29),new Block(10,30),new Block(10,31),new Block(11,0),new Block(11,2),new Block(11,31),new Block(12,0),new Block(12,2),new Block(12,31),new Block(13,0),new Block(13,2),new Block(13,7),new Block(13,11),new Block(13,15),new Block(13,19),new Block(13,23),new Block(13,27),new Block(13,31),new Block(14,0),new Block(14,2),new Block(14,5),new Block(14,6),new Block(14,7),new Block(14,8),new Block(14,9),new Block(14,10),new Block(14,11),new Block(14,12),new Block(14,13),new Block(14,14),new Block(14,15),new Block(14,16),new Block(14,17),new Block(14,18),new Block(14,19),new Block(14,20),new Block(14,21),new Block(14,22),new Block(14,23),new Block(14,24),new Block(14,25),new Block(14,26),new Block(14,27),new Block(14,28),new Block(14,29),new Block(14,30),new Block(14,31),new Block(15,0),new Block(15,2),new Block(15,7),new Block(15,11),new Block(15,15),new Block(15,19),new Block(15,23),new Block(15,27),new Block(15,31),new Block(16,0),new Block(16,2),new Block(16,5),new Block(16,9),new Block(16,13),new Block(16,17),new Block(16,21),new Block(16,25),new Block(16,29),new Block(16,31),new Block(17,0),new Block(17,2),new Block(17,3),new Block(17,4),new Block(17,5),new Block(17,6),new Block(17,7),new Block(17,8),new Block(17,9),new Block(17,10),new Block(17,11),new Block(17,12),new Block(17,13),new Block(17,14),new Block(17,15),new Block(17,16),new Block(17,17),new Block(17,18),new Block(17,19),new Block(17,20),new Block(17,21),new Block(17,22),new Block(17,23),new Block(17,24),new Block(17,25),new Block(17,26),new Block(17,27),new Block(17,28),new Block(17,29),new Block(17,31),new Block(18,0),new Block(18,2),new Block(18,3),new Block(18,9),new Block(18,13),new Block(18,17),new Block(18,21),new Block(18,25),new Block(18,29),new Block(18,31),new Block(19,0),new Block(19,7),new Block(19,11),new Block(19,15),new Block(19,19),new Block(19,23),new Block(19,27),new Block(19,31),new Block(20,0),new Block(20,3),new Block(20,6),new Block(20,7),new Block(20,8),new Block(20,9),new Block(20,10),new Block(20,11),new Block(20,12),new Block(20,13),new Block(20,14),new Block(20,15),new Block(20,16),new Block(20,17),new Block(20,18),new Block(20,19),new Block(20,20),new Block(20,21),new Block(20,22),new Block(20,23),new Block(20,24),new Block(20,25),new Block(20,26),new Block(20,27),new Block(20,28),new Block(20,29),new Block(20,30),new Block(20,31),new Block(21,0),new Block(21,3),new Block(21,6),new Block(21,10),new Block(21,14),new Block(21,18),new Block(21,22),new Block(21,26),new Block(21,31),new Block(22,0),new Block(22,3),new Block(22,8),new Block(22,12),new Block(22,16),new Block(22,20),new Block(22,24),new Block(22,28),new Block(22,31),new Block(23,0),new Block(23,3),new Block(23,4),new Block(23,5),new Block(23,6),new Block(23,7),new Block(23,8),new Block(23,9),new Block(23,10),new Block(23,11),new Block(23,12),new Block(23,13),new Block(23,14),new Block(23,15),new Block(23,16),new Block(23,17),new Block(23,18),new Block(23,19),new Block(23,20),new Block(23,21),new Block(23,22),new Block(23,23),new Block(23,24),new Block(23,25),new Block(23,26),new Block(23,27),new Block(23,28),new Block(23,29),new Block(23,31),new Block(24,0),new Block(24,3),new Block(24,31),new Block(25,0),new Block(25,1),new Block(25,2),new Block(25,3),new Block(25,31),new Block(26,0),new Block(26,31),new Block(27,0),new Block(27,31),new Block(28,0),new Block(28,31),new Block(29,0),new Block(29,31),new Block(30,0),new Block(30,31),new Block(31,0),new Block(31,31),new Block(32,0),new Block(32,31),new Block(33,0),new Block(33,31),new Block(34,0),new Block(34,31),new Block(35,0),new Block(35,31),new Block(36,0),new Block(36,31),new Block(37,0),new Block(37,31),new Block(38,0),new Block(38,31),new Block(39,0),new Block(39,31),new Block(40,0),new Block(40,31),new Block(41,0),new Block(41,31),new Block(42,0),new Block(42,31),new Block(43,0),new Block(43,31),new Block(44,0),new Block(44,31),new Block(45,0),new Block(45,31),new Block(46,0),new Block(46,31),new Block(47,0),new Block(47,31),new Block(48,0),new Block(48,31),new Block(49,0),new Block(49,1),new Block(49,2),new Block(49,3),new Block(49,4),new Block(49,5),new Block(49,6),new Block(49,7),new Block(49,8),new Block(49,9),new Block(49,10),new Block(49,11),new Block(49,12),new Block(49,13),new Block(49,14),new Block(49,15),new Block(49,16),new Block(49,17),new Block(49,18),new Block(49,19),new Block(49,20),new Block(49,21),new Block(49,22),new Block(49,23),new Block(49,24),new Block(49,25),new Block(49,26),new Block(49,27),new Block(49,28),new Block(49,29),new Block(49,30),new Block(49,31)]
+        blocks = [new Block(0,0),new Block(0,1),new Block(0,2),new Block(0,3),new Block(0,4),new Block(0,5),new Block(0,6),new Block(0,7),new Block(0,8),new Block(0,9),new Block(0,10),new Block(0,11),new Block(0,12),new Block(0,13),new Block(0,14),new Block(0,15),new Block(0,16),new Block(0,17),new Block(0,18),new Block(0,19),new Block(0,20),new Block(0,21),new Block(0,22),new Block(0,23),new Block(0,24),new Block(0,25),new Block(0,26),new Block(0,27),new Block(0,28),new Block(0,29),new Block(0,30),new Block(0,31),new Block(1,0),new Block(1,31),new Block(2,0),new Block(2,1),new Block(2,2),new Block(2,3),new Block(2,4),new Block(2,5),new Block(2,6),new Block(2,7),new Block(2,8),new Block(2,9),new Block(2,10),new Block(2,11),new Block(2,12),new Block(2,13),new Block(2,14),new Block(2,15),new Block(2,16),new Block(2,17),new Block(2,18),new Block(2,19),new Block(2,20),new Block(2,21),new Block(2,22),new Block(2,23),new Block(2,24),new Block(2,25),new Block(2,26),new Block(2,27),new Block(2,28),new Block(2,29),new Block(2,31),new Block(3,0),new Block(3,19),new Block(3,31),new Block(4,0),new Block(4,31),new Block(5,0),new Block(5,27),new Block(5,28),new Block(5,29),new Block(5,30),new Block(5,31),new Block(6,0),new Block(6,27),new Block(6,31),new Block(7,0),new Block(7,27),new Block(7,28),new Block(7,29),new Block(7,31),new Block(8,0),new Block(8,31),new Block(9,0),new Block(9,31),new Block(10,0),new Block(10,25),new Block(10,26),new Block(10,27),new Block(10,28),new Block(10,29),new Block(10,30),new Block(10,31),new Block(11,0),new Block(11,25),new Block(11,31),new Block(12,0),new Block(12,25),new Block(12,26),new Block(12,27),new Block(12,31),new Block(13,0),new Block(13,31),new Block(14,0),new Block(14,21),new Block(14,22),new Block(14,23),new Block(14,24),new Block(14,25),new Block(14,26),new Block(14,27),new Block(14,28),new Block(14,29),new Block(14,30),new Block(14,31),new Block(15,0),new Block(15,21),new Block(15,31),new Block(16,0),new Block(16,21),new Block(16,26),new Block(16,27),new Block(16,28),new Block(16,29),new Block(16,31),new Block(17,0),new Block(17,21),new Block(17,29),new Block(17,31),new Block(18,0),new Block(18,21),new Block(18,22),new Block(18,23),new Block(18,24),new Block(18,25),new Block(18,26),new Block(18,27),new Block(18,28),new Block(18,29),new Block(18,31),new Block(19,0),new Block(19,31),new Block(20,0),new Block(20,31),new Block(21,0),new Block(21,31),new Block(22,0),new Block(22,31),new Block(23,0),new Block(23,31),new Block(24,0),new Block(24,31),new Block(25,0),new Block(25,31),new Block(26,0),new Block(26,31),new Block(27,0),new Block(27,31),new Block(28,0),new Block(28,31),new Block(29,0),new Block(29,31),new Block(30,0),new Block(30,31),new Block(31,0),new Block(31,31),new Block(32,0),new Block(32,31),new Block(33,0),new Block(33,31),new Block(34,0),new Block(34,31),new Block(35,0),new Block(35,31),new Block(36,0),new Block(36,31),new Block(37,0),new Block(37,31),new Block(38,0),new Block(38,31),new Block(39,0),new Block(39,31),new Block(40,0),new Block(40,31),new Block(41,0),new Block(41,31),new Block(42,0),new Block(42,31),new Block(43,0),new Block(43,31),new Block(44,0),new Block(44,31),new Block(45,0),new Block(45,31),new Block(46,0),new Block(46,31),new Block(47,0),new Block(47,31),new Block(48,0),new Block(48,31),new Block(49,0),new Block(49,1),new Block(49,2),new Block(49,3),new Block(49,4),new Block(49,5),new Block(49,6),new Block(49,7),new Block(49,8),new Block(49,9),new Block(49,10),new Block(49,11),new Block(49,12),new Block(49,13),new Block(49,14),new Block(49,15),new Block(49,16),new Block(49,17),new Block(49,18),new Block(49,19),new Block(49,20),new Block(49,21),new Block(49,22),new Block(49,23),new Block(49,24),new Block(49,25),new Block(49,26),new Block(49,27),new Block(49,28),new Block(49,29),new Block(49,30),new Block(49,31)]
+        function redraw() {
+            upwardsForce += gravity;
+
+            if (upwardsForce > 10) {
+                upwardsForce = 20;
+            }
+
+            playerY += upwardsForce;
+
+            if (upwardsForce > 0) {
+                blocks.forEach(function(block) {
+                    if (playerX < block.x * 50 + 50 &&
+                        playerX + 50 > block.x * 50 &&
+                        playerY < block.y * 50 + 20 &&
+                        playerY + 50 > block.y * 50) {
+                            playerY = block.y * 50 - 50;
+                            upwardsForce = 1;
+                    }
+                })
+            }
+
+            blocks.forEach(block => {
+                if (playerX < block.x * 50 + 50 &&
+                    playerX + 50 > block.x * 50 &&
+                    playerY < block.y * 50 + 51 &&
+                    playerY + 50 > block.y * 50) {
+                        upwardsForce = 1;
+                        playerY = block.y * 50 + 50             
+                    }
+            });
+
+            blocks.forEach(block => {
+                if (playerX < block.x * 50 + 50 &&
+                    playerX + 50 > block.x * 50 &&
+                    playerY < block.y * 50 + 20 &&
+                    playerY + 50 > block.y * 50) {
+                        playerY = block.y * 50 - 50;
+                        upwardsForce = 1;
+                }
+            });
+            if (dDown) {
+                playerX += 5;
+                blocks.forEach(block => {
+                    while (playerX < block.x * 50 + 50 &&
+                    playerX + 50 > block.x * 50 &&
+                    playerY < block.y * 50 + 50 &&
+                    playerY + 50 > block.y * 50) {
+                            playerX -= 1;
+                    }
+                });
+            }
+            if (aDown) {
+                playerX -= 5;
+                blocks.forEach(block => {
+                    while (playerX < block.x * 50 + 50 &&
+                    playerX + 50 > block.x * 50 &&
+                    playerY < block.y * 50 + 50 &&
+                    playerY + 50 > block.y * 50) {
+                            playerX += 1;
+                    }
+                });
+            }
+
+            
+
+            ctx.fillStyle = "#5050FA";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            blocks.forEach(block => block.draw());
+
+            ctx.fillStyle = "red";
+            ctx.drawImage(Current_Texture, playerX, playerY);
+
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(2300, 1300, 75, 75);
+
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(2400, 1400, 75, 75);
+
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(2200, 1400, 75, 75);
+
+        }
+
+        function jump() {
+            if (jumps === maxJumps && upwardsForce > 0) {
+                jumps = maxJumps - 1;
+            }
+            if (jumps <= 0) {
+                canJump = false;
+            }
+            blocks.forEach(block => {
+                if (playerX < block.x * 50 + 50 &&
+                    playerX + 50 > block.x * 50 &&
+                    playerY < block.y * 50 + 50 &&
+                    playerY + 60 > block.y * 50) {
+                        jumps = maxJumps;
+                        canJump = true;
+                    }
+                    
+            });
+            if (canJump) {
+                upwardsForce = -15;
+            }
+        }
+
+        function ChangeAnimation() {
+            if (!aDown && !dDown) {
+                if (Current_Texture === Textures["Player Idle 1"]) {
+                    Current_Texture = Textures["Player Idle 2"]
+                } else {
+                    Current_Texture = Textures["Player Idle 1"]
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if(event.key === 'd') {
+                dDown = true;
+                Current_Texture = Textures["Player Looking Right"]
+            }
+            if(event.key === 'a') {
+                aDown = true;
+                Current_Texture = Textures["Player Looking Left"]
+            }
+            if(event.key === ' ') {
+                
+                if (canJump) {
+                    jump();
+                }
+                jumps -= 1;
+                canjump = false;
+                
+
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if(event.key === 'd') {
+                dDown = false;
+                if (!aDown) {
+                    Current_Texture = Textures["Player Idle 1"]
+                }
+            }
+            if(event.key === 'a') {
+                aDown = false;
+                if (!dDown) {
+                    Current_Texture = Textures["Player Idle 1"]
+                }
+            }
+            if (event.key === ' ') {
+                canJump = true
+            }
+        });
+
+        document.addEventListener('mousemove', function(event) {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+        });
+
+        document.addEventListener('mousedown', function(event) {
+            if (mouseX > 2300 && mouseX < 2375 && mouseY > 1300 && mouseY < 1375) {
+                jump();
+            }
+            if (mouseX > 2400 && mouseX < 2475 && mouseY > 1400 && mouseY < 1475) {
+                dDown = true;
+            }
+            if (mouseX > 2200 && mouseX < 2275 && mouseY > 1400 && mouseY < 1475) {
+                aDown = true;
+            }
+        });
+        document.addEventListener('mouseup', function(event) {
+            if (mouseX > 2400 && mouseX < 2475 && mouseY > 1400 && mouseY < 1475) {
+                dDown = false;
+            }
+            if (mouseX > 2200 && mouseX < 2275 && mouseY > 1400 && mouseY < 1475) {
+                aDown = false;
+            }
+        });
+
+
+
+
+        setInterval(ChangeAnimation, 800)
+        setInterval(redraw, 10);
+        blocks.forEach(function(block) {
+            blocks.forEach(function(block2) {
+                if (block2.x === block.x && block2.y === block.y - 1) {
+                    block.up = 1
+                } else if (block2.x === block.x - 1 && block2.y === block.y) {
+                    block.left = 1
+                } else if (block2.x === block.x + 1 && block2.y === block.y) {
+                    block.right = 1
+                } else if (block2.x === block.x && block2.y === block.y + 1) {
+                    block.down = 1     
+                }
+            })
+        })
