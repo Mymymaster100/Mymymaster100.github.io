@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Gambler - The Magnifier</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        canvas { background: #050505; border: 4px solid #444; border-radius: 8px; cursor: crosshair; transition: height 0.3s ease; }
+        .ui { margin-top: 15px; text-align: center; max-width: 800px; }
+        button { padding: 12px 18px; font-size: 14px; cursor: pointer; background: #4CAF50; border: none; color: white; border-radius: 4px; margin: 5px; font-weight: bold; }
+        button:hover:not(:disabled) { background: #66bb6a; }
+        button:disabled { background: #333; cursor: not-allowed; opacity: 0.6; }
+        #upgradeBtn { background: #9b59b6; }
+        #refineryBtn { background: #e67e22; }
+        #magnifierBtn { background: #f1c40f; color: #000; }
+        #lensBtn { background: #3498db; }
+        .stats-container { text-align: center; margin-bottom: 10px; }
+        .stats { font-size: 28px; color: #ffd700; font-weight: bold; }
+        .inv-text { color: #aaa; font-size: 14px; margin-top: 4px; }
+        #log { margin-top: 10px; height: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="stats-container">
+        <div class="stats" id="stats">Cash: $100</div>
+        <div class="inv-text" id="invCount">Bag Space: 0 / 16</div>
+    </div>
+
+    <canvas id="gameCanvas" width="400" height="150"></canvas>
+    
+    <div class="ui">
+        <button id="buyBtn">Buy Mystery Bag ($50)</button>
+        <button id="sellBtn" disabled>Sell All Gems</button>
+        <button id="upgradeBtn">Upgrade Backpack ($150)</button>
+        <button id="refineryBtn">Refinery ($10)</button>
+        <button id="magnifierBtn">Magnifier ($50)</button>
+        <button id="lensBtn">Buy Purification Lens ($1,000)</button>
+        <div id="log" style="color: #aaa;">Magnify Quartz into rarer gems!</div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const buyBtn = document.getElementById('buyBtn'), sellBtn = document.getElementById('sellBtn');
+    const upgradeBtn = document.getElementById('upgradeBtn'), refineryBtn = document.getElementById('refineryBtn');
+    const magnifierBtn = document.getElementById('magnifierBtn'), lensBtn = document.getElementById('lensBtn');
+    const stats = document.getElementById('stats'), invCount = document.getElementById('invCount'), log = document.getElementById('log');
+
+    let wallet = 100, inventory = [], sparkles = [], mouseX = 0, mouseY = 0;
+    let refineryMode = false, magnifierMode = false, hasLens = false, lensActive = false;
+    
+    const BAG_COST = 50, UPGRADE_COST = 150, REFINERY_FEE = 10, MAGNIFIER_FEE = 50, LENS_COST = 1000;
+
+    const gemTypes = [
+        { name: "Quartz", color: "#f0f0f0", min: 1, max: 3, weight: 45, chance: "45%" },
+        { name: "Amethyst", color: "#a29bfe", min: 4, max: 6, weight: 20, chance: "20%" },
+        { name: "Topaz", color: "#fdcb6e", min: 7, max: 10, weight: 12, chance: "12%" },
+        { name: "Emerald", color: "#55efc4", min: 12, max: 18, weight: 8, chance: "8%" },
+        { name: "Sapphire", color: "#0984e3", min: 20, max: 28, weight: 7, chance: "7%" },
+        { name: "Ruby", color: "#d63031", min: 30, max: 40, weight: 5, chance: "5%" },
+        { name: "Diamond", color: "#81ecec", min: 50, max: 70, weight: 2.5, chance: "2.5%" },
+        { name: "Obsidian", color: "#2d3436", min: 100, max: 150, weight: 0.5, chance: "0.5%" }
+    ];
+
+    function getDropTable() {
+        if (!lensActive) return gemTypes;
+        const filtered = JSON.parse(JSON.stringify(gemTypes));
+        filtered[0].weight = 5; filtered[1].weight = 30; filtered[2].weight = 20; filtered[3].weight = 15;
+        filtered[4].weight = 12; filtered[5].weight = 10; filtered[6].weight = 6; filtered[7].weight = 2;
+        return filtered;
+    }
+
+    function magnifyGem(index) {
+        if (wallet < MAGNIFIER_FEE || inventory[index].name !== "Quartz") return;
+        wallet -= MAGNIFIER_FEE;
+        const magTable = gemTypes.slice(1); // Remove Quartz
+        const magWeights = [30, 25, 15, 12, 10, 6, 2]; // Boosted rare rates
+        const totalWeight = magWeights.reduce((a, b) => a + b, 0);
+        let rand = Math.random() * totalWeight, cumulative = 0;
+        
+        for (let i = 0; i < magTable.length; i++) {
+            cumulative += magWeights[i];
+            if (rand <= cumulative) {
+                inventory[index] = {...magTable[i], refined: false};
+                break;
+            }
+        }
+        log.innerText = "Quartz Magnified!"; log.style.color = "#f1c40f"; updateUI();
+    }
+
+    function createSparkle(x, y, color, isRefined) {
+        return { x: x + (Math.random() - 0.5) * (isRefined ? 40 : 30), y: y + (Math.random() - 0.5) * (isRefined ? 40 : 30),
+            size: Math.random() * 2 + 1, alpha: 1, color: color, vX: (Math.random() - 0.5) * 0.5, vY: (Math.random() - 0.5) * 0.5 };
+    }
+
+    function updateUI() {
+        stats.innerText = `Cash: $${wallet}`; invCount.innerText = `Bag Space: ${inventory.length} / ${8 * Math.floor((canvas.height - 20) / 47)}`;
+        buyBtn.disabled = wallet < BAG_COST || (inventory.length + 15) > (8 * Math.floor((canvas.height - 20) / 47));
+        upgradeBtn.disabled = wallet < UPGRADE_COST || canvas.height >= 450;
+        sellBtn.disabled = inventory.length === 0; lensBtn.disabled = !hasLens && wallet < LENS_COST;
+        if (hasLens) { lensBtn.innerText = lensActive ? "Lens: ON" : "Lens: OFF"; lensBtn.style.background = lensActive ? "#3498db" : "#2980b9"; lensBtn.style.border = lensActive ? "2px solid white" : "none"; }
+        refineryBtn.style.border = refineryMode ? "2px solid white" : "none"; magnifierBtn.style.border = magnifierMode ? "2px solid white" : "none";
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let hoveredGemIdx = -1;
+        inventory.forEach((gem, i) => {
+            const x = 35 + (i % 8) * 47, y = 40 + Math.floor(i / 8) * 47;
+            const isHovered = Math.sqrt((mouseX - x)**2 + (mouseY - y)**2) < 20;
+            if (isHovered) hoveredGemIdx = i;
+            const scale = isHovered ? 1.2 : 1.0, size = 18 * scale;
+            if (Math.random() > (gem.refined ? 0.8 : 0.95)) sparkles.push(createSparkle(x, y, gem.color, gem.refined));
+            ctx.shadowBlur = (gem.refined ? 25 : 15) * scale; ctx.shadowColor = gem.color; ctx.fillStyle = gem.color;
+            ctx.beginPath();
+            if(gem.name === "Obsidian") { const bS = 30 * scale; ctx.rect(x - bS/2, y - bS/2, bS, bS); }
+            else { ctx.moveTo(x, y - size); ctx.lineTo(x + size, y); ctx.lineTo(x, y + size); ctx.lineTo(x - size, y); }
+            ctx.fill();
+            if (gem.refined) { ctx.strokeStyle = "white"; ctx.lineWidth = 2 * scale; ctx.stroke(); }
+            ctx.shadowBlur = 0; ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.beginPath();
+            ctx.moveTo(x - size/2, y - size/2); ctx.lineTo(x + size/4, y - size/2); ctx.lineTo(x - size/4, y + size/4); ctx.fill();
+        });
+        sparkles.forEach((s, idx) => { s.x += s.vX; s.y += s.vY; s.alpha -= 0.02; if (s.alpha <= 0) sparkles.splice(idx, 1);
+            ctx.globalAlpha = s.alpha; ctx.fillStyle = Math.random() > 0.5 ? "#fff" : s.color; ctx.fillRect(s.x, s.y, s.size, s.size); ctx.globalAlpha = 1; });
+        if (hoveredGemIdx !== -1) drawTooltip(inventory[hoveredGemIdx]);
+        requestAnimationFrame(gameLoop);
+    }
+
+    function drawTooltip(gem) {
+        const needsRefine = refineryMode && !gem.refined, isMagTarget = magnifierMode && gem.name === "Quartz";
+        const tw = 175, th = (needsRefine || isMagTarget) ? 95 : 75;
+        let tx = mouseX + 15, ty = mouseY + 15;
+        if (tx + tw > canvas.width) tx = mouseX - tw - 15; if (ty + th > canvas.height) ty = mouseY - th - 15;
+        ctx.fillStyle = "rgba(10, 10, 10, 0.95)"; ctx.strokeStyle = gem.refined ? "white" : gem.color; ctx.lineWidth = 2;
+        ctx.fillRect(tx, ty, tw, th); ctx.strokeRect(tx, ty, tw, th);
+        ctx.fillStyle = "white"; ctx.font = "bold 13px sans-serif"; ctx.fillText(gem.name + (gem.refined ? " (Refined)" : ""), tx + 10, ty + 22);
+        ctx.font = "12px sans-serif"; ctx.fillStyle = "#bbb";
+        ctx.fillText(gem.refined ? `Fixed Value: $${gem.max}` : `Market: $${gem.min}-$${gem.max}`, tx + 10, ty + 42);
+        ctx.fillStyle = gem.color; ctx.fillText(`Rarity: ${gem.chance}`, tx + 10, ty + 58);
+        if(needsRefine) { ctx.fillStyle = "#ffd700"; ctx.font = "bold 11px sans-serif"; ctx.fillText("CLICK TO REFINE ($10)", tx + 10, ty + 83); }
+        else if(isMagTarget) { ctx.fillStyle = "#f1c40f"; ctx.font = "bold 11px sans-serif"; ctx.fillText("CLICK TO MAGNIFY ($50)", tx + 10, ty + 83); }
+    }
+
+    canvas.onclick = () => {
+        inventory.forEach((gem, i) => {
+            const x = 35 + (i % 8) * 47, y = 40 + Math.floor(i / 8) * 47;
+            if (Math.sqrt((mouseX - x)**2 + (mouseY - y)**2) < 20) {
+                if (refineryMode && !gem.refined && wallet >= REFINERY_FEE) { wallet -= REFINERY_FEE; gem.refined = true; gem.min = gem.max; updateUI(); }
+                else if (magnifierMode && gem.name === "Quartz") { magnifyGem(i); }
+            }
+        });
+    };
+
+    canvas.onmousemove = (e) => { const rect = canvas.getBoundingClientRect(); mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top; };
+    buyBtn.onclick = () => {
+        if (wallet < BAG_COST) return; wallet -= BAG_COST;
+        const count = Math.floor(Math.random() * 6) + 10, table = getDropTable();
+        for (let i = 0; i < count; i++) {
+            const rand = Math.random() * 100; let cumulative = 0;
+            for(let type of table) { cumulative += type.weight; if(rand <= cumulative) { inventory.push({...type, refined: false}); break; } }
+        }
+        updateUI();
+    };
+
+    sellBtn.onclick = () => {
+        let total = 0; inventory.forEach(gem => total += Math.floor(Math.random() * (gem.max - gem.min + 1)) + gem.min);
+        wallet += total; inventory = []; refineryMode = magnifierMode = false; updateUI();
+    };
+
+    upgradeBtn.onclick = () => { if (wallet >= UPGRADE_COST) { wallet -= UPGRADE_COST; canvas.height += 94; updateUI(); } };
+    lensBtn.onclick = () => { if (!hasLens && wallet >= LENS_COST) { wallet -= LENS_COST; hasLens = true; lensActive = true; } else if (hasLens) { lensActive = !lensActive; } updateUI(); };
+    refineryBtn.onclick = () => { refineryMode = !refineryMode; magnifierMode = false; updateUI(); };
+    magnifierBtn.onclick = () => { magnifierMode = !magnifierMode; refineryMode = false; updateUI(); };
+
+    updateUI(); gameLoop();
+</script>
+</body>
+</html>
