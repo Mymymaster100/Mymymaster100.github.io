@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Offline Single Page App</title>
+    
+    <!-- This makes it installable on your iPad home screen without a separate manifest.json file -->
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Offline%20App%22,%22short_name%22:%22Offline%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%23000000%22}">
+
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background: #f0f0f0;
+            padding: 50px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Single File Offline App</h1>
+        <p>Turn off your Wi-Fi right now. This page will still load perfectly!</p>
+    </div>
+
+    <script>
+        // 1. Define the Service Worker code inside a text string
+        const swCode = `
+            const CACHE_NAME = 'single-file-cache-v1';
+            
+            // Cache just this single HTML page
+            self.addEventListener('install', (e) => {
+                e.waitUntil(
+                    caches.open(CACHE_NAME).then((cache) => {
+                        return cache.addAll(['/']);
+                    })
+                );
+            });
+
+            // Intercept network requests and serve the cached HTML file when offline
+            self.addEventListener('fetch', (e) => {
+                e.respondWith(
+                    caches.match(e.request).then((response) => {
+                        return response || fetch(e.request);
+                    })
+                );
+            });
+        `;
+
+        // 2. Register the Service Worker using a Data URL Blob
+        if ('serviceWorker' in navigator) {
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+
+            navigator.serviceWorker.register(swUrl, { scope: '/' })
+                .then(() => console.log('Single-file offline mode activated!'))
+                .catch(err => console.error('Offline setup failed:', err));
+        }
+    </script>
+</body>
+</html>
